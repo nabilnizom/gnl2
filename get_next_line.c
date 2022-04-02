@@ -19,22 +19,24 @@ char	*get_next_line(int fd)
 	char		*ret;
 	static char	*unret = NULL;
 
-	if (unret != NULL)
-	{
-		ret = ft_strdup(unret);
-		free(unret);
-	}
-	ret = malloc(sizeof(char) * (4 + 1));
-	unret = malloc(sizeof(char) * (4 + 1));
-	rd = malloc(sizeof(char) * (4 + 1));
-	while (read(fd, rd, 4 && ft_strlen(unret) == 0))
+	if (!fd)
+		return (NULL);
+	if (unret)
+		ret = unret;
+	else
+		ret = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	unret = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	rd = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	while ((ft_strlen(unret) == 0) && read(fd, rd, BUFFER_SIZE))
 	{
 		i = -1;
-		while (i++ <= 4 && ft_strlen(unret) == 0)
-				unret = rd_to_ret(unret, rd, i);
+		while (i++ < BUFFER_SIZE && (ft_strlen(unret) == 0))
+			unret = rd_to_ret(unret, rd, i);
 		ret = ft_strjoin(ret, rd);
-		ft_bzero(rd, 4);
+		ft_bzero(rd, BUFFER_SIZE);
 	}
+	if (!ret)
+		free(unret);
 	free (rd);
 	return (ret);
 }
