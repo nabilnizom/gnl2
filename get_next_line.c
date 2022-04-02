@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "get_next_line.h"
 
+#include <stdio.h>
+
 char	*rd_to_ret(char *unret, char *rd, int i)
 {
 	if (ft_strchr(rd, '\n') == &rd[i])
@@ -33,7 +35,7 @@ char	*get_next_line(int fd)
 		ret = ft_strjoin(ret, rd);
 		ft_bzero(rd, BUFFER_SIZE);
 	}
-	if (!ret || !fd)
+	if (ft_strlen(ret) == 0 || !fd)
 	{
 		free(unret);
 		return(NULL);
