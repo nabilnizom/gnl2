@@ -19,15 +19,13 @@ char	*get_next_line(int fd)
 	char		*ret;
 	static char	*unret = NULL;
 
-	if (!fd)
-		return (NULL);
 	if (unret)
 		ret = unret;
 	else
 		ret = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	unret = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	rd = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	while ((ft_strlen(unret) == 0) && read(fd, rd, BUFFER_SIZE))
+	while (fd && (ft_strlen(unret) == 0) && read(fd, rd, BUFFER_SIZE))
 	{
 		i = -1;
 		while (i++ < BUFFER_SIZE && (ft_strlen(unret) == 0))
@@ -35,8 +33,11 @@ char	*get_next_line(int fd)
 		ret = ft_strjoin(ret, rd);
 		ft_bzero(rd, BUFFER_SIZE);
 	}
-	if (!ret)
+	if (!ret || !fd)
+	{
 		free(unret);
+		return(NULL);
+	}
 	free (rd);
 	return (ret);
 }
