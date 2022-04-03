@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-char	*rd_to_ret(char *unret, char *rd, int i)
+char	*rd_to_unret(char *unret, char *rd, int i)
 {
 	if (ft_strchr(rd, '\n') == &rd[i])
 	{
@@ -12,6 +12,13 @@ char	*rd_to_ret(char *unret, char *rd, int i)
 		rd[i] = 0;
 	}
 	return (unret);
+}
+
+char	*rd_to_ret(char *ret, char *rd)
+{
+	ret = ft_strjoin(ret, rd);
+	ft_bzero(rd, BUFFER_SIZE);
+	return(ret);
 }
 
 char	*get_next_line(int fd)
@@ -27,19 +34,16 @@ char	*get_next_line(int fd)
 		ret = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	unret = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	rd = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	while (fd && (ft_strlen(unret) == 0) && read(fd, rd, BUFFER_SIZE))
+	while ((i = -1) < (fd - 3) && (ft_strlen(unret) == 0) && read(fd, rd, BUFFER_SIZE))
 	{
-		i = -1;
 		while (i++ < BUFFER_SIZE && (ft_strlen(unret) == 0))
-			unret = rd_to_ret(unret, rd, i);
-		ret = ft_strjoin(ret, rd);
-		ft_bzero(rd, BUFFER_SIZE);
+			unret = rd_to_unret(unret, rd, i);
+		ret = rd_to_ret(ret, rd);
 	}
-	if (ft_strlen(ret) == 0 || !fd)
-	{
+	if (ft_strlen(ret) == 0 || fd < 3)
 		free(unret);
-		return(NULL);
-	}
+	if (ft_strlen(ret) == 0 || fd < 3)
+		ret = NULL;
 	free (rd);
 	return (ret);
 }
