@@ -40,10 +40,10 @@ char	*get_next_line(int fd)
 			unret = rd_to_unret(unret, rd, i);
 		ret = rd_to_ret(ret, rd);
 	}
-	if (ft_strlen(ret) == 0 || fd < 3)
+	free (rd);
+	if (ft_strlen(ret) == 0)
 		free(unret);
 	if (ft_strlen(ret) == 0 || fd < 3)
 		ret = NULL;
-	free (rd);
 	return (ret);
 }
