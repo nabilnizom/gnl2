@@ -2,23 +2,27 @@
 #include <stdlib.h>
 #include "get_next_line.h"
 
-#include <stdio.h>
-
 char	*rd_to_unret(char *unret, char *rd, int i)
 {
+	char	*unret_joined;
+
 	if (ft_strchr(rd, '\n') == &rd[i])
 	{
-		unret = ft_strjoin(unret, &rd[i]);
+		unret_joined = ft_strjoin(unret, &rd[i]);
 		rd[i] = 0;
+		return(unret_joined);
 	}
-	return (unret);
+	else
+		return (unret);
 }
 
 char	*rd_to_ret(char *ret, char *rd)
 {
-	ret = ft_strjoin(ret, rd);
+	char	*ret_joined;
+	
+	ret_joined = ft_strjoin(ret, rd);
 	ft_bzero(rd, BUFFER_SIZE);
-	return(ret);
+	return(ret_joined);
 }
 
 char	*get_next_line(int fd)
