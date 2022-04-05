@@ -2,6 +2,13 @@
 # define GET_NEXT_LINE_
 # include <stddef.h>
 
+typedef struct s_struct
+{
+		int		index;
+		int		n_read;
+		char	rd[BUFFER_SIZE];
+}				t_struct;
+
 size_t	ft_strlen(const char *str);
 char	*ft_strchr(const char *str, int c);
 char	*ft_strjoin(char const *s1, char const *s2);

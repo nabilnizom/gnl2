@@ -4,46 +4,86 @@
 
 #include <stdio.h>
 
-char	*rd_to_unret(char *unret, char *rd, int i)
+char	*rd_to_ret(char *ret, char *rd, int i, int n)
 {
-	if (ft_strchr(rd, '\n') == &rd[i])
-	{
-		unret = ft_strjoin(unret, &rd[i]);
-		rd[i] = 0;
-	}
-	return (unret);
+	char	*temp;
+	char	tempchar;
+
+	tempchar = rd[i+1];
+	if (i < n)
+		rd[i + 1] = 0;
+	temp = ft_strjoin(ret, rd);
+	rd[i + 1] = tempchar;
+	free(ret);
+	return(temp);
 }
 
-char	*rd_to_ret(char *ret, char *rd)
+char	*rdold_to_ret(char	*ret, char	*rd, int i)
 {
-	ret = ft_strjoin(ret, rd);
-	ft_bzero(rd, BUFFER_SIZE);
-	return(ret);
+	char	*temp;
+	int		j;
+	char	tempchar;
+
+	j = i + 1;
+	tempchar = 0;
+	while (rd[j] && rd[j] != '\n')
+		j++;
+	if (rd[j] == '\n')
+	{
+		tempchar = rd[j];
+		rd[j] = 0;
+	}
+	temp = ft_strjoin(ret, &rd[i]);
+	if (tempchar != 0)
+	{
+		rd[j] = tempchar;
+		i = j;
+	}
+	else
+		ft_bzero(rd, BUFFER_SIZE);
+	free(ret);
+	return(temp);
+}
+
+int		check_nl(char	*rd)
+{
+	int	i;
+
+	i = 0;
+	while (rd[i] != '\n' && rd[i])
+		i++;
+	return (i);
 }
 
 char	*get_next_line(int fd)
 {
-	char		*rd;
-	int			i;
-	char		*ret;
-	static char	*unret = NULL;
+	static t_struct	rd;
+	char			*ret;
 
-	if (unret)
-		ret = unret;
-	else
-		ret = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	unret = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	rd = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	while ((i = -1) < (fd - 3) && (ft_strlen(unret) == 0) && read(fd, rd, BUFFER_SIZE))
+	if (read(fd, NULL, 0 < 0))
+		return (NULL);
+	ret = (char *)malloc(sizeof(char *) * rd.n_read);
+	if (rd.index > 0)
+		 ret = rdold_to_ret(ret, rd.rd, rd.index + 1);
+	rd.n_read = read(fd, rd.rd, BUFFER_SIZE);
+	if (rd.n_read == 0 && rd.index == 0)
 	{
-		while (i++ < BUFFER_SIZE && (ft_strlen(unret) == 0))
-			unret = rd_to_unret(unret, rd, i);
-		ret = rd_to_ret(ret, rd);
+		free(ret);
+		return(NULL);
 	}
-	free (rd);
-	if (ft_strlen(ret) == 0)
-		free(unret);
-	if (ft_strlen(ret) == 0 || fd < 3)
-		ret = NULL;
+	while (ft_strchr(ret, '\n') == 0 && rd.n_read)
+	{
+		rd.index = check_nl(rd.rd);
+		ret = rd_to_ret(ret, rd.rd, rd.index, rd.n_read);
+		if (ft_strchr(rd.rd, '\n' == 0))
+			ft_bzero(rd.rd, rd.n_read);
+		if (rd.index == rd.n_read && ft_strchr(rd.rd,'\n') == NULL)
+		{
+			rd.n_read = read(fd, rd.rd, BUFFER_SIZE);
+			rd.index = 0;
+		}
+		else
+			return (ret);
+	}
 	return (ret);
 }
