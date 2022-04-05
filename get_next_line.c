@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "get_next_line.h"
 
+<<<<<<< HEAD
 #include <stdio.h>
 
 char	*rd_to_ret(char *ret, char *rd, int i, int n)
@@ -43,16 +44,38 @@ char	*rdold_to_ret(char	*ret, char	*rd, int i)
 		ft_bzero(rd, BUFFER_SIZE);
 	free(ret);
 	return(temp);
+=======
+char	*rd_to_unret(char *unret, char *rd, int i)
+{
+	char	*unret_joined;
+
+	if (ft_strchr(rd, '\n') == &rd[i])
+	{
+		unret_joined = ft_strjoin(unret, &rd[i]);
+		rd[i] = 0;
+		return(unret_joined);
+	}
+	else
+		return (unret);
+>>>>>>> fd67da830c1df28b7e37465ef904e522a0eafbbe
 }
 
 int		check_nl(char	*rd)
 {
+<<<<<<< HEAD
 	int	i;
 
 	i = 0;
 	while (rd[i] != '\n' && rd[i])
 		i++;
 	return (i);
+=======
+	char	*ret_joined;
+	
+	ret_joined = ft_strjoin(ret, rd);
+	ft_bzero(rd, BUFFER_SIZE);
+	return(ret_joined);
+>>>>>>> fd67da830c1df28b7e37465ef904e522a0eafbbe
 }
 
 char	*get_next_line(int fd)
