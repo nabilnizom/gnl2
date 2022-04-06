@@ -1,89 +1,85 @@
-#include <unistd.h>
-#include <stdlib.h>
 #include "get_next_line.h"
 
-#include <stdio.h>
-
-char	*rd_to_ret(char *ret, char *rd, int i, int n)
+char    *get_next_line(int fd)
 {
-	char	*temp;
-	char	tempchar;
+    static  t_struct rd;
+    char    *ret;
 
-	tempchar = rd[i+1];
-	if (i < n)
-		rd[i + 1] = 0;
-	temp = ft_strjoin(ret, rd);
-	rd[i + 1] = tempchar;
-	free(ret);
-	return(temp);
+    if(ft_strlen(rd.read) == 0)
+        initialize (rd.read, &rd.index, &rd.n_read, fd);
+    if(rd.n_read <= 0)
+        return (NULL);
+    ret = (char *)malloc(sizeof(char) * rd.n_read);
+    ft_bzero(ret, rd.n_read);
+    while (rd.n_read && rd.n_read > rd.index)
+    {
+        rd.index = find_newline(rd.read);
+        ret = read_to_ret(rd.read, ret, &rd.index, &rd.n_read);
+        if (ft_strchr(ret, '\n'))
+            return (ret);
+        else
+            initialize (rd.read, &rd.index, &rd.n_read, fd);
+    }
+    return(ret);
 }
 
-char	*rdold_to_ret(char	*ret, char	*rd, int i)
+void    initialize(char *rd, int *index, int *n_read, int fd)
 {
-	char	*temp;
-	int		j;
-	char	tempchar;
-
-	j = i + 1;
-	tempchar = 0;
-	while (rd[j] && rd[j] != '\n')
-		j++;
-	if (rd[j] == '\n')
-	{
-		tempchar = rd[j];
-		rd[j] = 0;
-	}
-	temp = ft_strjoin(ret, &rd[i]);
-	if (tempchar != 0)
-	{
-		rd[j] = tempchar;
-		i = j;
-	}
-	else
-		ft_bzero(rd, BUFFER_SIZE);
-	free(ret);
-	return(temp);
+    if (ft_strlen(rd) == 0)
+    {
+        *n_read = read(fd, rd, BUFFER_SIZE);
+        *index = -1;
+    }
 }
 
-int		check_nl(char	*rd)
+int find_newline(char *read)
 {
-	int	i;
-
-	i = 0;
-	while (rd[i] != '\n' && rd[i])
-		i++;
-	return (i);
+    int i;
+    
+    i = 0;
+    while (read[i] != '\n' && read[i])
+            i++;
+    return(i);
 }
 
-char	*get_next_line(int fd)
+char    *read_to_ret(char *read, char *ret, int *i, int *n)
 {
-	static t_struct	rd;
-	char			*ret;
+    char    temp_char;
+    char    *temp_str;
+    
+    temp_char = 0;
+    if (*i < *n)
+    {
+        temp_char = read[*i + 1];
+        read[*i + 1] = '\0';
+    }
+    if (!(*ret))
+        temp_str = ft_strdup(read);
+    else
+        temp_str = ft_strjoin(ret, read);
+    if (temp_char != 0)
+        read[*i + 1] = temp_char;
+    free(ret);
+    if ((*i + 1) == *n)
+        ft_bzero(read, BUFFER_SIZE + 1);
+    else
+    {
+        move_read(read, *i + 1);
+        *n -= 1;
+    }
+    return (temp_str);
+}
 
-	if (read(fd, NULL, 0 < 0))
-		return (NULL);
-	ret = (char *)malloc(sizeof(char *) * rd.n_read);
-	if (rd.index > 0)
-		 ret = rdold_to_ret(ret, rd.rd, rd.index + 1);
-	rd.n_read = read(fd, rd.rd, BUFFER_SIZE);
-	if (rd.n_read == 0 && rd.index == 0)
-	{
-		free(ret);
-		return(NULL);
-	}
-	while (ft_strchr(ret, '\n') == 0 && rd.n_read)
-	{
-		rd.index = check_nl(rd.rd);
-		ret = rd_to_ret(ret, rd.rd, rd.index, rd.n_read);
-		if (ft_strchr(rd.rd, '\n' == 0))
-			ft_bzero(rd.rd, rd.n_read);
-		if (rd.index == rd.n_read && ft_strchr(rd.rd,'\n') == NULL)
-		{
-			rd.n_read = read(fd, rd.rd, BUFFER_SIZE);
-			rd.index = 0;
-		}
-		else
-			return (ret);
-	}
-	return (ret);
+void    move_read(char  *read, int i)
+{
+    int j;
+
+    j = 0;
+    while (read[i])
+    {
+        read[j] = read[i];
+        j++;
+        i++;
+    }
+    ft_bzero(&read[j], (BUFFER_SIZE + 1 - j));
 }
